@@ -1,6 +1,29 @@
-# Guia Passo a Passo: Conectando Expo (React Native) ao Firebase Database (Plano Spark Gratuito)
+# Registro da Semana - Integrações com APIs Externas
 
-Este guia prático ensina como criar, configurar e conectar uma aplicação React Native desenvolvida com Expo ao Firebase Database (Cloud Firestore ou Realtime Database), permitindo gravar seu primeiro dado de forma simples, didática e segura.
+**Escola Manoel Ignácio** - Desenvolvimento de Sistemas - 3ª série B - 2026  
+**Programação Front-End** - 3º Bimestre - Semana 17 - Aula 2  
+`nome@dev:~$_`
+
+---
+
+## 🎯 Contexto e Objetivo
+
+Este guia prático ensina como criar, configurar e conectar uma aplicação React Native desenvolvida com Expo e TypeScript ao Firebase Database (Cloud Firestore ou Realtime Database), permitindo gravar seu primeiro dado de forma simples, didática e segura.
+
+---
+
+## ⏳ Prazos e Pontuação
+
+* **Entrega na 1ª semana (até 14 de agosto):** 10 pontos de semana AVA.
+* **Entrega na 2ª semana (até 21 de agosto):** 5 pontos de semana AVA.
+* **Entrega após 21 de agosto:** 1 ponto de semana AVA.
+
+---
+
+## ✈️ Envio
+
+* **Identificação Obrigatória:** Adicione o seu nome completo nos arquivos para envio como identificação.
+* **Opções de envio no AVA:** Cole a captura de tela ou gravação dos resultados, envie os arquivos, ou copie os códigos desenvolvidos e cole-os diretamente na plataforma AVA.
 
 ---
 
@@ -9,7 +32,7 @@ Este guia prático ensina como criar, configurar e conectar uma aplicação Reac
 Antes de começar, certifique-se de que possui os seguintes itens instalados e configurados:
 
 1. **Node.js**: Versão LTS instalada em sua máquina (recomendado versão 18 ou superior).
-2. **Expo CLI / Create Expo App**: Ambiente de desenvolvimento React Native configurado com Expo.
+2. **Expo CLI / Create Expo App**: Ambiente de desenvolvimento React Native com suporte a TypeScript configurado com Expo.
 3. **Conta Google / Firebase**: Uma conta Google ativa para acessar o [Firebase Console](https://console.firebase.google.com/).
 
 ---
@@ -83,16 +106,16 @@ Antes de começar, certifique-se de que possui os seguintes itens instalados e c
 
 ---
 
-## ⚡ Passo 3: Arquivo de Conexão (`firebaseConfig.js` ou `firebaseConfig.ts`)
+## ⚡ Passo 3: Arquivo de Conexão (`firebaseConfig.ts`)
 
-Crie o arquivo de inicialização do Firebase dentro do seu projeto (por exemplo, na pasta `src/services/firebaseConfig.js` ou na raiz como `firebaseConfig.js`).
+Crie o arquivo de inicialização do Firebase com TypeScript dentro do seu projeto (por exemplo, na pasta `src/services/firebaseConfig.ts` ou na raiz como `firebaseConfig.ts`).
 
-### Código para Cloud Firestore:
+### Código TypeScript para Cloud Firestore:
 
-```javascript
-// firebaseConfig.js
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+```typescript
+// firebaseConfig.ts
+import { FirebaseApp, initializeApp, getApps, getApp } from 'firebase/app';
+import { Firestore, getFirestore } from 'firebase/firestore';
 
 // Objeto de configuração consumindo as variáveis de ambiente do Expo
 const firebaseConfig = {
@@ -105,25 +128,25 @@ const firebaseConfig = {
 };
 
 // Evita que o app Firebase seja inicializado mais de uma vez durante o Fast Refresh do Expo
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Inicializa a instância do banco de dados (Cloud Firestore)
-const db = getFirestore(app);
+// Inicializa a instância do banco de dados (Cloud Firestore) com tipagem
+const db: Firestore = getFirestore(app);
 
 export { app, db };
 ```
 
-*(Caso opte por usar o **Realtime Database**, substitua a importação do Firestore por `import { getDatabase } from 'firebase/database';` e exporte `const db = getDatabase(app);`)*.
+*(Caso opte por usar o **Realtime Database**, substitua a importação do Firestore por `import { Database, getDatabase } from 'firebase/database';` e exporte `const db: Database = getDatabase(app);`)*.
 
 ---
 
 ## 🚀 Passo 4: Gravando o Primeiro Dado / Documento
 
-Para validar se a conexão e as credenciais foram configuradas corretamente, crie um exemplo mínimo e direto dentro de uma tela do Expo (exemplo: no arquivo `App.js` ou `App.tsx`).
+Para validar se a conexão e as credenciais foram configuradas corretamente, crie um exemplo mínimo e direto utilizando TypeScript dentro de uma tela do Expo (exemplo: no arquivo `App.tsx`).
 
-### Exemplo de Componente React Native (`App.js`):
+### Exemplo de Componente React Native com TypeScript (`App.tsx`):
 
-```jsx
+```tsx
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -135,33 +158,34 @@ import {
 } from 'react-native';
 
 // Importações do Firestore e da nossa configuração
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, DocumentReference } from 'firebase/firestore';
 import { db } from './firebaseConfig'; // Ajuste o caminho do arquivo se necessário
 
-export default function App() {
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState('');
+export default function App(): React.JSX.Element {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [status, setStatus] = useState<string>('');
 
   // Função disparada ao clicar no botão para salvar um documento de teste
-  const handleSalvarPrimeiroDado = async () => {
+  const handleSalvarPrimeiroDado = async (): Promise<void> => {
     setLoading(true);
     setStatus('');
 
     try {
       // Adiciona um novo documento na coleção "teste_conexao"
-      const docRef = await addDoc(collection(db, 'teste_conexao'), {
-        mensagem: 'Olá! Conexão entre Expo e Firebase realizada com sucesso.',
-        plataforma: 'React Native (Expo)',
+      const docRef: DocumentReference = await addDoc(collection(db, 'teste_conexao'), {
+        mensagem: 'Olá! Conexão entre Expo (TypeScript) e Firebase realizada com sucesso.',
+        plataforma: 'React Native (Expo + TypeScript)',
         criadoEm: serverTimestamp(),
       });
 
       console.log('Documento gravado com sucesso! ID:', docRef.id);
       setStatus(`✅ Documento criado com sucesso!\nID: ${docRef.id}`);
       Alert.alert('Sucesso 🎉', `Dado gravado no Firebase!\nID: ${docRef.id}`);
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido ao salvar no banco.';
       console.error('Erro ao gravar dado no Firebase:', error);
-      setStatus(`❌ Erro: ${error.message}`);
-      Alert.alert('Erro ao Gravar ❌', error.message);
+      setStatus(`❌ Erro: ${errorMessage}`);
+      Alert.alert('Erro ao Gravar ❌', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -170,7 +194,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Teste de Conexão Firebase</Text>
-      <Text style={styles.subtitle}>Expo + Cloud Firestore</Text>
+      <Text style={styles.subtitle}>Expo + TypeScript + Cloud Firestore</Text>
 
       <TouchableOpacity
         style={styles.button}
